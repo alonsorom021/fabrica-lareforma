@@ -1,32 +1,34 @@
 FROM php:8.3-apache
 
-# Instalar dependencias del sistema
+# 1. Instalar dependencias del sistema (incluyendo libicu para intl y libzip para zip)
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
+    libicu-dev \
+    libzip-dev \
     zip \
     unzip \
     git \
     curl
 
-# Instalar extensiones de PHP necesarias para Laravel
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+# 2. Instalar extensiones de PHP (añadidas intl y zip)
+RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd intl zip
 
-# Configurar Apache
+# 3. Configurar Apache
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/000-default.conf
 RUN a2enmod rewrite
 
-# Copiar archivos del proyecto
+# 4. Copiar archivos del proyecto
 WORKDIR /var/www/html
 COPY . .
 
-# Instalar Composer
+# 5. Instalar Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN composer install --no-dev --optimize-autoloader
 
-# Permisos
+# 6. Permisos
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
 CMD ["apache2-foreground"]

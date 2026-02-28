@@ -14,7 +14,8 @@ RUN apt-get update && apt-get install -y \
     curl
 
 # 2. Instalar extensiones de PHP (Cambiamos pdo_mysql por pdo_pgsql)
-RUN docker-php-ext-install pdo_pgsql mbstring exif pcntl bcmath gd intl zip
+RUN apt-get update && apt-get install -y libpq-dev \
+    && docker-php-ext-install pdo_pgsql mbstring exif pcntl bcmath gd intl zip
 
 # 3. Configurar Apache
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
@@ -38,11 +39,13 @@ RUN php artisan filament:assets \
     && php artisan route:cache \
     && php artisan view:cache
 
-# 8. Script de inicio para correr migraciones y encender Apache
+# 8. Script de inicio corregido
 COPY --chmod=755 <<EOF /usr/local/bin/docker-php-entrypoint-custom.sh
 #!/bin/sh
 php artisan migrate --force
+php artisan db:seed --force
 apache2-foreground
 EOF
+
 
 ENTRYPOINT ["docker-php-entrypoint-custom.sh"]

@@ -36,7 +36,8 @@ RUN mkdir -p storage/framework/{sessions,views,cache} bootstrap/cache \
 
 # 7. Optimización de Laravel (Sin caché de config para evitar conflictos de variables)
 RUN php artisan filament:assets \
-    && php artisan route:cache \
+    && php artisan route:clear \
+    && php artisan config:clear \
     && php artisan view:cache
 
 # 8. Script de inicio corregido

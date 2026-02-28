@@ -28,7 +28,18 @@ COPY . .
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN composer install --no-dev --optimize-autoloader
 
-# 6. Permisos
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+# 6. Permisos (Asegurar que existan las carpetas antes)
+RUN mkdir -p storage/framework/{sessions,views,cache} bootstrap/cache \
+    && chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+
+# 7. Optimización de Laravel para Producción
+# Esto genera los estilos de Filament y limpia la caché
+RUN php artisan filament:assets \
+    && php artisan config:cache \
+    && php artisan route:cache \
+    && php artisan view:cache
+
+# Exponer el puerto que Render detectó
+EXPOSE 80
 
 CMD ["apache2-foreground"]

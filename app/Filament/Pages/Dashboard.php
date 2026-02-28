@@ -7,10 +7,11 @@ use Filament\Pages\Page;
 
 class Dashboard extends Page
 {
+    protected static ?string $slug = 'dashboard';
     protected static ?string $title = 'Inicio';
     protected static ?string $navigationLabel = 'Inicio';
     protected static ?string $navigationIcon = 'heroicon-o-home';
-
+    
     protected static string $view = 'filament.pages.dashboard';
     
     protected function getWidgets(): array

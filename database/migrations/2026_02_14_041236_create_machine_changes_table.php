@@ -13,18 +13,13 @@ return new class extends Migration
     {
         Schema::create('machine_changes', function (Blueprint $table) {
             $table->id();
-            
-            // Relación con la tabla machines
-            $table->foreignId('machine_id')
-                    ->constrained('machines')
-                    ->onUpdate('cascade')
-                    ->onDelete('cascade'); 
-            $table->string('previous_gauge'); //Calibre Anterior
-            $table->string('current_gauge'); //Calibre Actual
-            $table->timestamps(); //Fecha y Hora
+            $table->foreignId('machine_id')->constrained('machines')->onDelete('cascade');
+            $table->string('previous_gauge');
+            $table->string('current_gauge');
+            $table->timestamps();
         });
     }
-
+        
     /**
      * Reverse the migrations.
      */

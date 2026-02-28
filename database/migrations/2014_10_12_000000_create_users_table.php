@@ -17,12 +17,13 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->string('role')->default('Operador');
+            $table->string('role', 50)->default('Operador');
+            $table->string('operator_id', 50)->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
     }
-
+        
     /**
      * Reverse the migrations.
      */

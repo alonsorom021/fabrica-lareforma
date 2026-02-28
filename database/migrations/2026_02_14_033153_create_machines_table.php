@@ -11,15 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-       Schema::create('machines', function (Blueprint $table) {
+        Schema::create('machines', function (Blueprint $table) {
             $table->id();
-            $table->string('name'); // Ejemplo: Trocil N
-            $table->string('machine_gauge')->nullable(); // Calibre de Máquina
-            $table->boolean('is_active')->default(true); //Estado de la maquina
-            $table->timestamps(); //Fecha y Hora
+            $table->string('name');
+            $table->string('yarn')->nullable();
+            $table->decimal('speed', 8, 2)->nullable();
+            $table->integer('usage');
+            $table->integer('yarn_weight')->nullable();
+            $table->decimal('productive_cap', 8, 2)->nullable();
+            $table->decimal('shift_cap', 12, 6)->nullable();
+            $table->decimal('real_val', 12, 6)->nullable();
+            $table->tinyInteger('is_active')->default(1);
+            $table->timestamps();
         });
     }
-
+        
     /**
      * Reverse the migrations.
      */

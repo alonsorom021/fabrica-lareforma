@@ -13,14 +13,17 @@ return new class extends Migration
     {
         Schema::create('production_log', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('machine_id')->constrained()->onDelete('cascade');
-            $table->double('kg_produced'); // Kilogramos de hilo
-            $table->string('shift');       // Turno (lo ponemos como string)
-            $table->date('date');          // Agregamos la fecha para poder filtrar reportes
+            $table->foreignId('machine_id')->constrained('machines')->onDelete('cascade');
+            $table->decimal('kg_produced', 12, 3);
+            $table->foreignId('user_id')->constrained('users')->onDelete('restrict');
+            $table->string('shift', 50);
+            $table->dateTime('start_time')->nullable();
+            $table->dateTime('end_time')->nullable();
+            $table->text('observation')->nullable();
             $table->timestamps();
         });
     }
-
+        
     /**
      * Reverse the migrations.
      */

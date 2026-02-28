@@ -12,14 +12,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('production_total_log', function (Blueprint $table) {
-            $table->id(); 
-            $table->foreignId('machine_id')->constrained()->onDelete('cascade');
-            $table->integer('production_daily');
+            $table->id();
+            $table->foreignId('machine_id')->constrained('machines')->onDelete('cascade');
+            $table->string('shift', 50);
+            $table->decimal('real_kg', 12, 3);
+            $table->decimal('objective_kg', 12, 3);
+            $table->decimal('efficiency', 5, 2)->default(0);
+            $table->date('date_select')->nullable();
             $table->text('observations')->nullable();
             $table->timestamps();
         });
     }
-
+        
     /**
      * Reverse the migrations.
      */

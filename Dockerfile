@@ -20,6 +20,9 @@ RUN apt-get update && apt-get install -y libpq-dev \
 # 3. Configurar Apache
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/000-default.conf
+#
+RUN sed -ri -e 's!AllowOverride None!AllowOverride All!g' /etc/apache2/apache2.conf
+
 RUN a2enmod rewrite
 
 # 4. Copiar archivos del proyecto

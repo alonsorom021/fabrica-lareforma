@@ -38,6 +38,11 @@ RUN php artisan filament:assets \
     && php artisan route:cache \
     && php artisan view:cache
 
-EXPOSE 80
+# 8. Script de inicio para correr migraciones y encender Apache
+COPY --chmod=755 <<EOF /usr/local/bin/docker-php-entrypoint-custom.sh
+#!/bin/sh
+php artisan migrate --force
+apache2-foreground
+EOF
 
-CMD ["apache2-foreground"]
+ENTRYPOINT ["docker-php-entrypoint-custom.sh"]

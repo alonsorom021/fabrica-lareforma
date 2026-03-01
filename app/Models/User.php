@@ -6,10 +6,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use Filament\Models\Contracts\FilamentUser;  // ← Agregar
-use Filament\Panel;                           // ← Agregar
+use Filament\Models\Contracts\FilamentUser;  
+use Filament\Panel;                           
 
-class User extends Authenticatable implements FilamentUser  // ← Agregar
+class User extends Authenticatable implements FilamentUser
 {
     use HasApiTokens, HasFactory, Notifiable;
 
@@ -35,10 +35,9 @@ class User extends Authenticatable implements FilamentUser  // ← Agregar
     const ROLE_OPERADOR = 'Operador';
     const ROLE_SUPERVISOR = 'Supervisor';
     
-    // ← Agregar este método
     public function canAccessPanel(Panel $panel): bool
     {
-        return $this->hasAnyRole(['Admin', 'Supervisor']);
+        return $this->hasAnyRole(['Admin', 'Supervisor','Operador']);
     }
     
     public function hasRole(string $role): bool

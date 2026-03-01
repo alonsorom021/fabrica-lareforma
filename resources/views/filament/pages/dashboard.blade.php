@@ -27,7 +27,7 @@
     {{-- PROGRESS BAR --}}
     @php $d = $this->getProgressData(); @endphp
 
-    <!-- <x-filament::section>
+    {{--<x-filament::section>
         <x-slot name="heading">
             <div class="flex items-center gap-3">
                 <div class="flex items-center justify-center w-8 h-8 rounded-lg bg-primary-600">
@@ -38,7 +38,7 @@
         </x-slot>
         <div class="space-y-6">
             {{-- META DIARIA --}}
-            <div>
+           {{-- <div>
                 <div class="flex items-center justify-between mb-2">
                     <div class="flex items-center gap-2">
                         <x-heroicon-o-sun class="w-4 h-4 text-gray-400"/>
@@ -74,7 +74,7 @@
             <hr class="border-gray-100 dark:border-gray-700">
 
             {{-- META DEL TURNO --}}
-            <div>
+           {{-- <div>
                 <div class="flex items-center justify-between mb-2">
                     <div class="flex items-center gap-2">
                         <x-heroicon-o-clock class="w-4 h-4 text-gray-400"/>
@@ -110,6 +110,6 @@
             </div>
 
         </div>
-    </x-filament::section>-->
+    </x-filament::section>--}}
 
 </x-filament-panels::page>

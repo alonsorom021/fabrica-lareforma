@@ -13,11 +13,14 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    if (auth()->check()) {
-        return redirect('/admin');
-    }
-    return redirect('/admin/login');
+Route::get('/apache-debug', function () {
+    return response()->json([
+        'document_root' => $_SERVER['DOCUMENT_ROOT'] ?? 'N/A',
+        'apache_config' => file_get_contents('/etc/apache2/sites-available/000-default.conf'),
+        'apache_conf_snippet' => shell_exec('grep -A5 "Directory /var/www" /etc/apache2/apache2.conf'),
+        'htaccess_exists' => file_exists(public_path('.htaccess')),
+        'htaccess_content' => file_get_contents(public_path('.htaccess')),
+    ]);
 });
 
 

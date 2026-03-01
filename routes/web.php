@@ -13,12 +13,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/apache-debug', function () {
-    return response()->json([
-        'apache_conf_snippet' => shell_exec('grep -A5 "Directory /var/www" /etc/apache2/apache2.conf'),
-        'apache_conf_public' => shell_exec('grep -A5 "Directory /var/www/html/public" /etc/apache2/apache2.conf'),
-        'modules_enabled' => shell_exec('apache2ctl -M 2>&1'),
-    ]);
-});
+Route::get('/', function () {
+    if (auth()->check()) {
+        return redirect('/admin');
+    }
+    return redirect('/admin/login');
+}); 
 
 

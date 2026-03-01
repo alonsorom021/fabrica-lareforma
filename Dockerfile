@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y \
 # 2. Instalar extensiones de PHP
 RUN docker-php-ext-install pdo_pgsql mbstring exif pcntl bcmath gd intl zip
 
- 3. Configurar Apache
+# 3. Configurar Apache
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 
 RUN <<EOF cat > /etc/apache2/sites-available/000-default.conf
@@ -30,10 +30,10 @@ RUN <<EOF cat > /etc/apache2/sites-available/000-default.conf
 </VirtualHost>
 EOF
 
-# ← Agregar esta línea para sobreescribir el AllowOverride None de apache2.conf
 RUN sed -i 's|AllowOverride None|AllowOverride All|g' /etc/apache2/apache2.conf
 
 RUN a2enmod rewrite
+
 # 4. Copiar archivos del proyecto
 WORKDIR /var/www/html
 COPY . .

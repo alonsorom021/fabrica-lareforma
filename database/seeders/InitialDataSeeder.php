@@ -17,7 +17,7 @@ class InitialDataSeeder extends Seeder
                 'name' => 'Alonso Romero',
                 'email' => 'aloromerooya280@gmail.com',
                 'password' => Hash::make('admin123'),
-                'role' => 'Administrador',
+                'role' => 'Admin',
                 'operator_id' => 'ADM001',
             ],
             [

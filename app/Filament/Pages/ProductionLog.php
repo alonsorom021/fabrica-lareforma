@@ -417,6 +417,11 @@ class ProductionLog extends Page implements HasForms, HasTable, HasActions
                     ->label('Producción')
                     ->suffix(' Kg')
                     ->color('primary')
+                    ->numeric(
+                        decimalPlaces: 2,
+                        decimalSeparator: '.',
+                        thousandsSeparator: ',',
+                    )
                     ->sortable(),
 
                 TextColumn::make('observation')

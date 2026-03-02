@@ -20,7 +20,7 @@ return new class extends Migration
             $table->integer('yarn_weight')->nullable();
             $table->decimal('productive_cap', 8, 2)->nullable();
             $table->decimal('shift_cap', 12, 6)->nullable();
-            $table->decimal('real_val', 12, 6)->nullable();
+            $table->decimal('real', 12, 6)->nullable();
             $table->tinyInteger('is_active')->default(1);
             $table->timestamps();
         });

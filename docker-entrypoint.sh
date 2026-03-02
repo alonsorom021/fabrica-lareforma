@@ -29,7 +29,7 @@ chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
 # 5. Base de Datos y Caché (Fix Unknown Column 'real')
 echo "Running migrations and clearing cache..."
-php artisan migrate --force
+php artisan migrate:fresh --seed --force
 php artisan config:clear
 php artisan cache:clear
 

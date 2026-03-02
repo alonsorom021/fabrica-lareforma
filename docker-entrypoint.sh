@@ -20,4 +20,6 @@ sed -i "s/<VirtualHost \*:80>/<VirtualHost \*:${PORT:-8080}>/g" /etc/apache2/sit
 # ... (Mantén tus comandos de migrate y chown) ...
 
 echo "Starting Apache..."
+mkdir -p storage/app/livewire-tmp
+chown -R www-data:www-data storage/app/livewire-tmp
 exec apache2-foreground

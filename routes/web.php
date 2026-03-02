@@ -13,11 +13,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    if (auth()->check()) {
-        return redirect('/admin');
-    }
-    return redirect('/admin/login');
-}); 
+Route::get('/laravel-log', function () {
+    $log = storage_path('logs/laravel.log');
+    if (!file_exists($log)) return 'No hay log';
+    $content = shell_exec('tail -100 ' . $log);
+    return response()->json(['log' => $content]);
+});
 
 

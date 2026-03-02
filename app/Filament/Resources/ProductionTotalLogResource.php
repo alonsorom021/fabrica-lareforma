@@ -171,7 +171,7 @@ class ProductionTotalLogResource extends Resource
                                             $dataRepeater[] = [
                                                 'machine_id'   => $item->machine_id,
                                                 'machine_name' => $item->machine->name,
-                                                'kg_produced'  => $real,
+                                                'kg_produced'  => number_format($real, 2, '.', ''),
                                                 'objetive'     => number_format($objetivoAjustado, 2, '.', ''),
                                                 'efficiency'   => $eficiencia,
                                             ];
@@ -208,15 +208,16 @@ class ProductionTotalLogResource extends Resource
                                     TextInput::make('kg_produced')
                                         ->label('Real (Kg)')
                                         ->numeric()
-                                        ->readOnly()
-                                        ->prefix('Kg'),
+                                        ->prefix('Kg')
+                                        ->formatStateUsing(fn ($state) => number_format((float) $state, 2, '.', ''))
+                                        ->readOnly(),
                                         
                                     TextInput::make('objetive')
-                                    ->label('Objetivo (Kg)')
-                                    ->numeric()
-                                    ->formatStateUsing(fn ($state) => number_format((float) $state, 2, '.', ''))
-                                    ->readOnly(),
-                                    
+                                        ->label('Objetivo (Kg)')
+                                        ->numeric()
+                                        ->formatStateUsing(fn ($state) => number_format((float) $state, 2, '.', ''))
+                                        ->readOnly(),
+                                        
                                     TextInput::make('efficiency')
                                         ->label('Eficiencia (%)')
                                         ->suffix('%')

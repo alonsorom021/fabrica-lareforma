@@ -2,77 +2,124 @@
 
 namespace App\Filament\Widgets;
 
-use App\Models\ProductionTotalLog;
+use App\Models\Machine;
+use App\Models\ProductionLog;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class ProductionEfficiency extends BaseWidget
 {
+    protected static ?string $pollingInterval = '30s';
+    protected int | string | array $columnSpan = 'full';
+
+    protected function getColumns(): int
+    {
+        return 3;
+    }
+
+    private function turnoActual(): string
+    {
+        return match (true) {
+            now()->hour >= 7  && now()->hour < 15 => 'Mañana',
+            now()->hour >= 15 && now()->hour < 23 => 'Tarde',
+            default                               => 'Noche',
+        };
+    }
+
+    private function calcularMetaTurno(string $turno, $maquinasIds): float
+    {
+        return Machine::whereIn('id', $maquinasIds)
+            ->get()
+            ->sum(function (Machine $machine) use ($turno) {
+                $real = (float) $machine->real;
+                return match($turno) {
+                    'Mañana' => $real,
+                    'Tarde'  => ($real / 8) * 7.5,
+                    'Noche'  => ($real / 8) * 8.5,
+                    default  => $real,
+                };
+            });
+    } 
+    
     protected function getStats(): array
     {
-        // 1. Turno
-        $horaActual = now()->hour;
-        $turnoActual = match (true) {
-            $horaActual >= 7 && $horaActual < 15  => '1er Turno',
-            $horaActual >= 15 && $horaActual < 23 => '2do Turno',
-            default                               => '3er Turno',
-        };
-        // 2. Consulta
-        $registros = ProductionTotalLog::query()
-            ->whereDate('date_select', today())
+        $turnoActual     = $this->turnoActual();
+
+        $registros       = ProductionLog::query()
+            ->whereDate('created_at', today())
             ->where('shift', $turnoActual)
+            ->with('machine')
             ->get();
-        // 3. Cálculos Dinámicos
-        $totalProducido     = (float) $registros->sum('real');
-        $metaDelTurno       = (float) $registros->sum('objetive');
-        $eficienciaPromedio = (float) ($registros->avg('efficiency') ?? 0);
-        $datosEficiencia    = $registros->sortBy('created_at')
-                                        ->pluck('efficiency')
-                                        ->take(10)
-                                        ->toArray();
-        // 4. Cálculo de porcentaje de avance real
+
+        $totalProducido  = (float) $registros->sum('kg_produced');
+        $totalRegistros  = $registros->count();
+        $maquinasActivas = $registros->pluck('machine_id')->unique();
+        $metaTurno       = $this->calcularMetaTurno($turnoActual, $maquinasActivas);
+
+        $porcentaje = $metaTurno > 0
+            ? min(($totalProducido / $metaTurno) * 100, 100)
+            : 0;
+        $faltante   = max(0, $metaTurno - $totalProducido);
+
+        // 👈 color dinámico según avance
+        $colorAvance = match(true) {
+            $totalProducido === 0.0 => 'gray',
+            $porcentaje >= 100      => 'success',  // verde
+            $porcentaje >= 50       => 'warning',  // amarillo
+            default                 => 'danger',   // rojo
+        };
+
+        // 👈 color registros según actividad
+        $colorRegistros = match(true) {
+            $totalRegistros === 0          => 'gray',
+            $totalRegistros >= 10          => 'success',
+            $totalRegistros >= 5           => 'warning',
+            default                        => 'danger',
+        };
+
+        // 👈 color máquinas según cantidad activa
+        $colorMaquinas = match(true) {
+            $maquinasActivas->count() === 0 => 'gray',
+            $maquinasActivas->count() >= 5  => 'success',
+            $maquinasActivas->count() >= 3  => 'warning',
+            default                         => 'danger',
+        };
+
         if ($totalProducido === 0.0) {
-            $conteoSinTurno = ProductionTotalLog::whereDate('date_select', today())->count();
+            $conteoSinTurno = ProductionLog::whereDate('created_at', today())->count();
             $descripcionAux = $conteoSinTurno > 0
-                ? "Hay {$conteoSinTurno} registros hoy, pero no son del {$turnoActual}"
+                ? "Hay {$conteoSinTurno} registros hoy, pero no son del turno {$turnoActual}"
                 : 'No hay registros hoy';
         } else {
-            $descripcionAux = 'Meta del turno: ' . number_format($metaDelTurno, 2) . ' Kg';
+            $descripcionAux = $porcentaje >= 100
+                ? '✅ Meta alcanzada'
+                : '⏳ Faltan ' . number_format($faltante, 2) . ' Kg — ' . number_format($porcentaje, 1) . '%';
         }
 
-        // 5. Colores
-        $porcentajeAvance = $metaDelTurno > 0 
-            ? min(($totalProducido / $metaDelTurno) * 100, 100) 
-            : 0;
+        $datosChart = $registros->sortBy('created_at')
+            ->pluck('kg_produced')
+            ->filter()
+            ->map(fn ($v) => (float) $v)
+            ->take(10)
+            ->values()
+            ->toArray();
 
-        $colorEficiencia = match(true) {
-            $eficienciaPromedio >= 90 => 'success',
-            $eficienciaPromedio >= 70 => 'warning',
-            default                   => 'danger',
-        };
-
-        $colorPendiente = match(true) {
-            $metaDelTurno === 0.0    => 'gray',
-            $porcentajeAvance >= 80  => 'success',
-            $porcentajeAvance >= 50  => 'warning',
-            default                  => 'danger',
-        };
-        
         return [
-            Stat::make('Producción: ' . $turnoActual, number_format($totalProducido, 2) . ' Kg')
+           Stat::make('Producción: ' . $turnoActual, number_format($totalProducido, 2) . ' Kg')
                 ->description($descripcionAux)
-                ->descriptionIcon('heroicon-m-presentation-chart-line')
-                ->color($colorEficiencia),
-            Stat::make('Objetivo', number_format(max(0, $metaDelTurno - $totalProducido), 2) . ' Kg')
-            ->description('Avance del turno: ' . number_format($porcentajeAvance, 1) . '%')
-            ->descriptionIcon('heroicon-m-arrow-path')
-            ->color($colorPendiente),
-            Stat::make('Eficiencia', number_format($eficienciaPromedio, 1) . '%')
-                ->description($eficienciaPromedio >= 90 ? 'Excelente rendimiento' : 'Revisar máquinas lentas')
-                ->descriptionIcon('heroicon-m-bolt')
-                ->chart($datosEficiencia)
-                ->color($colorEficiencia), 
+                ->descriptionIcon($porcentaje >= 100 ? 'heroicon-m-check-circle' : 'heroicon-m-scale') // 👈
+                ->color($colorAvance)
+                ->chart($datosChart),
+
+            Stat::make('Registros del Turno', $totalRegistros)
+                ->description('Último: ' . ($registros->last()?->created_at?->format('h:i A') ?? 'Sin registros'))
+                ->descriptionIcon('heroicon-m-clipboard-document-list') // 👈
+                ->color($colorRegistros),
+
+            Stat::make('Máquinas Trabajando', $maquinasActivas->count())
+                ->description("En turno {$turnoActual} hoy")
+                ->descriptionIcon('heroicon-m-cog-6-tooth') // 👈
+                ->color($colorMaquinas),
         ];
     }
-    
 }

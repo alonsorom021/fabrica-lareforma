@@ -19,10 +19,16 @@
     </div>
     
     <div class="mt-2">
-        <x-filament-widgets::widgets
+        <div class="flex-1 space-y-4">
+            <h3 class="text-2xl font-black tracking-tight text-gray-950 dark:text-white">
+                Producción en curso:
+            </h3>
+            <x-filament-widgets::widgets
             :widgets="$this->getWidgets()"
-            :columns="3"
-        />
+            {{-- :columns="1" --}}
+            />
+        </div>
+        
     </div>
     {{-- PROGRESS BAR --}}
     @php $d = $this->getProgressData(); @endphp

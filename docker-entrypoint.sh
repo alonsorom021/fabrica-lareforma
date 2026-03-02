@@ -32,6 +32,8 @@ echo "Running migrations and clearing cache..."
 php artisan migrate:fresh --seed --force
 php artisan config:clear
 php artisan cache:clear
+php artisan view:clear
+php artisan cache:clear
 
 # 6. Iniciar Apache
 echo "Starting Apache..."

@@ -1,5 +1,16 @@
 [phases.setup]
-nixPkgs = ["php83", "php83Extensions.pdo_mysql", "php83Extensions.mbstring", "php83Extensions.exif", "php83Extensions.bcmath", "php83Extensions.gd", "php83Extensions.intl", "php83Extensions.zip", "composer"]
+nixPkgs = [
+    "php83",
+    "php83Extensions.pdo_mysql",
+    "php83Extensions.mbstring",
+    "php83Extensions.exif",
+    "php83Extensions.bcmath",
+    "php83Extensions.gd",
+    "php83Extensions.intl",
+    "php83Extensions.zip",
+    "php83Extensions.curl",
+    "composer"
+]
 
 [phases.build]
 cmds = [
@@ -10,3 +21,8 @@ cmds = [
 
 [start]
 cmd = "php artisan migrate --force && php artisan db:seed --force && php artisan serve --host=0.0.0.0 --port=$PORT"
+```
+
+También agrega un archivo `.php-version` en la raíz del proyecto con solo esto:
+```
+8.3

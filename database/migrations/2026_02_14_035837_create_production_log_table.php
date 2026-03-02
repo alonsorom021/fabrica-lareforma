@@ -17,8 +17,8 @@ return new class extends Migration
             $table->decimal('kg_produced', 12, 3);
             $table->foreignId('user_id')->constrained('users')->onDelete('restrict');
             $table->string('shift', 50);
-            $table->dateTime('start_time')->nullable();
-            $table->dateTime('end_time')->nullable();
+            $table->time('start_time');
+            $table->time('end_time');
             $table->text('observation')->nullable();
             $table->timestamps();
         });

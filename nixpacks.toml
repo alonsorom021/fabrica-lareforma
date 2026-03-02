@@ -9,20 +9,20 @@ nixPkgs = [
     "php83Extensions.intl",
     "php83Extensions.zip",
     "php83Extensions.curl",
+    "php83Extensions.opcache",
     "composer"
+]
+
+[phases.install]
+cmds = [
+    "composer install --no-dev --optimize-autoloader --ignore-platform-reqs"
 ]
 
 [phases.build]
 cmds = [
-    "composer install --no-dev --optimize-autoloader",
     "php artisan filament:assets",
     "php artisan view:cache"
 ]
 
 [start]
 cmd = "php artisan migrate --force && php artisan db:seed --force && php artisan serve --host=0.0.0.0 --port=$PORT"
-```
-
-También agrega un archivo `.php-version` en la raíz del proyecto con solo esto:
-```
-8.3

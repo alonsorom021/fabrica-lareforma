@@ -27,14 +27,19 @@ mkdir -p storage/app/livewire-tmp storage/framework/sessions storage/framework/v
 chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# 5. Base de Datos y Caché (Fix Unknown Column 'real')
+# 5. Base de Datos y Caché (Optimizado)
 echo "Running migrations and clearing cache..."
-php artisan migrate:fresh --seed --force
+# Usa 'migrate --force' para producción. 
+# Solo usa 'migrate:fresh' si quieres borrar la DB y empezar de cero.
+php artisan migrate --force
+
+# Opcional: Solo si necesitas cargar datos de prueba cada vez
+# php artisan db:seed --force 
+
 php artisan config:clear
-php artisan cache:clear
+php artisan route:clear
 php artisan view:clear
 php artisan cache:clear
-
 # 6. Iniciar Apache
 echo "Starting Apache..."
 exec apache2-foreground

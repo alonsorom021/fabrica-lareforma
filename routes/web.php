@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+Route::get('/', fn () => redirect('/admin'));
 
 Route::get('/laravel-log', function () {
     $log = storage_path('logs/laravel.log');

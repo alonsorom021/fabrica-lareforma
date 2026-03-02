@@ -50,7 +50,7 @@ RUN php artisan filament:assets \
     && php artisan view:cache
 
 # 8. Script de inicio
-RUN printf '#!/bin/sh\na2dismod mpm_event\na2enmod mpm_prefork\nphp artisan migrate --force\nphp artisan db:seed --force\nexec apache2-foreground\n' > /usr/local/bin/docker-php-entrypoint-custom.sh \
+RUN printf '#!/bin/sh\na2dismod mpm_event\na2enmod mpm_prefork\necho "Waiting for MySQL..."\nuntil php -r "new PDO(\"mysql:host=${DB_HOST};port=${DB_PORT};dbname=${DB_DATABASE}\", \"${DB_USERNAME}\", \"${DB_PASSWORD}\");"\n  do echo "MySQL not ready, retrying..."\n  sleep 2\ndone\necho "MySQL ready!"\nphp artisan migrate --force\nphp artisan db:seed --force\nexec apache2-foreground\n' > /usr/local/bin/docker-php-entrypoint-custom.sh \
     && chmod +x /usr/local/bin/docker-php-entrypoint-custom.sh
 
 ENTRYPOINT ["docker-php-entrypoint-custom.sh"]

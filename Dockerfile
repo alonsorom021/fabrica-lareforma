@@ -17,19 +17,8 @@ RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd intl zip
 
 # 3. Configurar Apache
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
-RUN <<EOF cat > /etc/apache2/sites-available/000-default.conf
-<VirtualHost *:80>
-    DocumentRoot /var/www/html/public
-    <Directory /var/www/html/public>
-        AllowOverride All
-        Require all granted
-        Options -Indexes
-    </Directory>
-</VirtualHost>
-EOF
-RUN sed -i 's|AllowOverride None|AllowOverride All|g' /etc/apache2/apache2.conf
-RUN a2dismod mpm_event && a2enmod mpm_prefork
-RUN a2enmod rewrite
+ENV PORT 80
+RUN echo "Listen \${PORT}" > /etc/apache2/ports.conf
 
 # 4. Copiar archivos del proyecto
 WORKDIR /var/www/html

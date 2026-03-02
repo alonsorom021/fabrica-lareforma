@@ -7,7 +7,6 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev \
     libicu-dev \
     libzip-dev \
-    libpq-dev \
     zip \
     unzip \
     git \
@@ -18,7 +17,6 @@ RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd intl zip
 
 # 3. Configurar Apache
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
-
 RUN <<EOF cat > /etc/apache2/sites-available/000-default.conf
 <VirtualHost *:80>
     DocumentRoot /var/www/html/public
@@ -29,9 +27,8 @@ RUN <<EOF cat > /etc/apache2/sites-available/000-default.conf
     </Directory>
 </VirtualHost>
 EOF
-
 RUN sed -i 's|AllowOverride None|AllowOverride All|g' /etc/apache2/apache2.conf
-
+RUN a2dismod mpm_event && a2enmod mpm_prefork
 RUN a2enmod rewrite
 
 # 4. Copiar archivos del proyecto
@@ -58,6 +55,4 @@ COPY --chmod=755 <<EOF /usr/local/bin/docker-php-entrypoint-custom.sh
 php artisan migrate --force
 php artisan db:seed --force
 apache2-foreground
-EOF
-
-ENTRYPOINT ["docker-php-entrypoint-custom.sh"]
+EO

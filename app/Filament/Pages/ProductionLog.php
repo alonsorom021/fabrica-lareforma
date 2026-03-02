@@ -345,8 +345,8 @@ class ProductionLog extends Page implements HasForms, HasTable, HasActions
                     ModelsProductionLog::create([
                         'machine_id'  => $data['machine_id'],
                         'kg_produced' => $data['kg_produced'],
-                        'start_time'  => $data['start_time'],
-                        'end_time'    => $data['end_time'],
+                        'start_time'  => Carbon::parse($data['start_time'])->format('H:i:s'),
+                        'end_time'    => Carbon::parse($data['end_time'])->format('H:i:s'),
                         'user_id'     => auth()->id(),
                         'shift'       => $turno,
                         'observation' => $data['observation'],

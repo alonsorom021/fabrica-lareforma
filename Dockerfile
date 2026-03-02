@@ -50,7 +50,7 @@ RUN php artisan filament:assets \
     && php artisan view:cache
 
 # 8. Script de inicio
-RUN printf '#!/bin/sh\nphp artisan migrate --force\nphp artisan db:seed --force\nexec apache2-foreground\n' > /usr/local/bin/docker-php-entrypoint-custom.sh \
+RUN printf '#!/bin/sh\na2dismod mpm_event\na2enmod mpm_prefork\nphp artisan migrate --force\nphp artisan db:seed --force\nexec apache2-foreground\n' > /usr/local/bin/docker-php-entrypoint-custom.sh \
     && chmod +x /usr/local/bin/docker-php-entrypoint-custom.sh
 
 ENTRYPOINT ["docker-php-entrypoint-custom.sh"]

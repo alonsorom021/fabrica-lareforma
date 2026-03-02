@@ -74,7 +74,7 @@ class InitialDataSeeder extends Seeder
                     'yarn_weight'    => $m[5],
                     'productive_cap' => $m[6],
                     'shift_cap'      => $m[7],
-                    'real_val'       => $m[8],
+                    'real'           => $m[8],
                     'is_active'      => $m[9],
                 ]
             );

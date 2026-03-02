@@ -17,8 +17,16 @@ RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd intl zip
 
 # 3. Configurar Apache
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
-ENV PORT 80
-RUN echo "Listen \${PORT}" > /etc/apache2/ports.conf
+
+# Deshabilitar el MPM event y habilitar prefork (necesario para PHP)
+RUN a2dismod mpm_event && a2enmod mpm_prefork
+
+# Habilitar rewrite para las rutas de Laravel/Filament
+RUN a2enmod rewrite
+
+# Configurar el DocumentRoot
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
+RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
 # 4. Copiar archivos del proyecto
 WORKDIR /var/www/html

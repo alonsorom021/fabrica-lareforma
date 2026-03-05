@@ -21,8 +21,8 @@ class InitialDataSeeder extends Seeder
                 'operator_id' => 'ADM001',
             ],
             [
-                'name' => 'Juan',
-                'email' => 'eljuan@lareforma.com',
+                'name' => 'Maria',
+                'email' => 'lamaria@lareforma.com',
                 'password' => Hash::make('super123'),
                 'role' => 'Supervisor',
                 'operator_id' => 'SUP001',
@@ -33,6 +33,20 @@ class InitialDataSeeder extends Seeder
                 'password' => Hash::make('op123'),
                 'role' => 'Operador',
                 'operator_id' => 'OP001',
+            ],
+            [
+                'name' => 'Eduardo',
+                'email' => 'elduardo@lareforma.com',
+                'password' => Hash::make('op123'),
+                'role' => 'Operador',
+                'operator_id' => 'OP002',
+            ],
+            [
+                'name' => 'Rosa',
+                'email' => 'larosa@lareforma.com',
+                'password' => Hash::make('op123'),
+                'role' => 'Operador',
+                'operator_id' => 'OP003',
             ],
         ];
 

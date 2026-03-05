@@ -12,11 +12,17 @@ class ProductionLog extends Model
         protected $fillable = [
             'machine_id',
             'kg_produced',
+            'user_id',
+            'user_stop_id',
+            'status',
+            'shift',
             'start_time',
             'end_time',
-            'user_id',
-            'shift',
             'observation',
+            'edited_by_operator',
+        ];
+        protected $casts = [
+            'edited_by_operator' => 'boolean',
         ];
         public function machine(): BelongsTo
         {
@@ -25,5 +31,9 @@ class ProductionLog extends Model
         public function user():BelongsTo
         {
             return $this->belongsTo(User::class);
+        }
+        public function operatorStop(): BelongsTo
+        {
+            return $this->belongsTo(User::class, 'user_stop_id');
         }
 }

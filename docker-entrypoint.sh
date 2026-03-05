@@ -31,15 +31,17 @@ chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 echo "Running migrations and clearing cache..."
 # Usa 'migrate --force' para producción. 
 # Solo usa 'migrate:fresh' si quieres borrar la DB y empezar de cero.
-php artisan migrate --force
+php artisan migrate:fresh --force
+#php artisan migrate --force
 
 # Opcional: Solo si necesitas cargar datos de prueba cada vez
-# php artisan db:seed --force 
+php artisan db:seed --force 
 
 php artisan config:clear
 php artisan route:clear
 php artisan view:clear
 php artisan cache:clear
+
 # 6. Iniciar Apache
 echo "Starting Apache..."
 exec apache2-foreground

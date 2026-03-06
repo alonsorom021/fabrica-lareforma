@@ -646,6 +646,15 @@ class ProductionLog extends Page implements HasForms, HasTable, HasActions
                                 ->prefixIconColor('danger')
                                 ->hint(fn ($state) => $this->advertenciaHoraTurno($state) ?? '')
                                 ->hintColor(fn ($state) => $this->advertenciaHoraTurno($state) ? 'warning' : 'danger'),
+                                
+                                Toggle::make('confirmar')
+                                ->label('Confirmo que los datos son correctos')
+                                ->required()
+                                ->accepted()
+                                ->validationMessages([
+                                    'accepted' => 'Debes confirmar que los datos son correctos antes de continuar.',
+                                ])
+                                ->columnSpanFull()
                         ])
                         ->columns(2)
                         ->visible(fn () => auth()->user()->hasRole(User::ROLE_OPERADOR)),
@@ -678,11 +687,13 @@ class ProductionLog extends Page implements HasForms, HasTable, HasActions
                                 ->offColor('success')
                                 ->onIcon('heroicon-m-lock-closed')
                                 ->offIcon('heroicon-m-lock-open')
+                                ->columnSpanFull()
                         ]) 
                         ->columns(3)
                         ->visible(fn () => auth()->user()->hasAnyRole(['Admin', 'Supervisor'])),
                 ])
                 ->action(function ($record, array $data) {
+                    
                     $isOperator = !auth()->user()->hasAnyRole(['Admin', 'Supervisor']);
                     
                     if ($isOperator) {
@@ -698,7 +709,7 @@ class ProductionLog extends Page implements HasForms, HasTable, HasActions
                             'shift'              => $this->actualizaTurno($endTime),
                             'edited_by_operator' => true,
                         ]);
-
+                        
                         Notification::make()
                             ->title('Registro Actualizado')
                             ->success()
@@ -709,13 +720,14 @@ class ProductionLog extends Page implements HasForms, HasTable, HasActions
                         $record->update([
                             'edited_by_operator' => $data['edited_by_operator'],
                         ]);
-
+                        
                         Notification::make()
                         ->title('Ajustes Realizados')
                         ->success()
                         ->send();
                     } 
                 }),
+                
                 
             // ── ÍCONO "BLOQUEADO" (solo Operador cuando ya agotó su edición)
             TablesAction::make('ya_editado')
